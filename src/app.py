@@ -8,3 +8,4 @@ app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+pymysql://root:@localhost/buy_boo
 
 
 
+# test asdaswdasd
