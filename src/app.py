@@ -6,6 +6,3 @@ from datetime import datetime
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+pymysql://root:@localhost/buy_book'
 
-
-
-# test asdaswdasd
