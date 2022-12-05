@@ -9,22 +9,19 @@ from decouple import config
 config.encoding = 'cp1251'
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite::///users.db'
 app.config['SECRET_KEY'] = config('SECRET_KEY')
 app.debug = True
 
-db = SQLAlchemy(app)
+
 
 # app.config["SQLALCHEMY_DATABASE_URI"] = config('DATABASE_URL')
 
-class Users(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(200), nullable=False)
-    email = db.Column(db.String(120), nullable=False, unique=True)
-    date_added = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def __repr__(self):
-        return '<Name %r>' % self.name
+
+class UserForm(FlaskForm):
+    name = StringField("Name", validators=[DataRequired()])
+    email = StringField("Email", validators=[DataRequired()])
+    submit = SubmitField("Submit")
 
 # Form Class
 class NameForm(FlaskForm):
@@ -32,7 +29,15 @@ class NameForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
-
+@app.route('/user/add', methods=['GET','POST'])
+def add_user():
+    name = None
+    form = UserForm()
+    # if form.validate_on_submit():
+        # user = Users.query.filter_by(email=form.email.data)
+        
+    return render_template("add_user.html", form=form)
+    
 # localhost:5000/
 @app.route('/')
 def index():
