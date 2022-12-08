@@ -1,4 +1,4 @@
-CREATE DATABASE [IF NOT EXIST] `buy_book` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+CREATE DATABASE `buy_book` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 
 CREATE TABLE bibliography (
   id INT NOT NULL AUTO_INCREMENT,
@@ -7,7 +7,7 @@ CREATE TABLE bibliography (
   genre VARCHAR(50),
   description VARCHAR(500),
   publisher VARCHAR(100),
-  publication_year VARCHAR(4),
+  publication_year INT(4),
   page_count INT,
   volume INT,
   rating INT,

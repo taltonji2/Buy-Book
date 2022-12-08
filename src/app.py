@@ -1,7 +1,5 @@
 from flask import Flask, render_template, request
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
-from wtforms.validators import DataRequired
+from flask_restful import Api, Resource, reqparse
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from decouple import config
@@ -9,65 +7,67 @@ from decouple import config
 config.encoding = 'cp1251'
 
 app = Flask(__name__)
+api = Api(app)
 app.config['SECRET_KEY'] = config('SECRET_KEY')
-app.debug = True
+app.config["SQLALCHEMY_DATABASE_URI"] = config('DATABASE_URL')
+
+db = SQLAlchemy(app)
+# db Models
+class User(db.Model):
+    __tablename__ = 'user'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(25), nullable=False)
+    password = db.Column(db.String(50), nullable=False)
+
+
+class Bibliography(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    author = db.Column(db.String(50), nullable=False)
+    genre = db.Column(db.String(50))
+    description = db.Column(db.String(500))
+    publisher = db.Column(db.String(100))
+    publication_year = db.Column(db.Integer(4))
+    page_count = db.Column(db.Integer)
+    volume = db.Column(db.Integer)
+    rating = db.Column(db.Integer)
+
+
+class book (db.Model):
+    __tablename__ = 'book'
+    id = db.Column(db.Integer, primary_key=True)
+    bibliography_id = db.Column(db.Integer, db.ForeignKey('bibliography.id'), nullable=False)
+
+
+class ownership (db.Model):
+    __tablename__ = 'ownership'
+    id = db.Column(db.Integer, primary_key=True)
+    book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeingKey('user.id'), nullable=False)
+
+class wishlist(db.Model):
+    __tablename__ = 'wishlist'
+    id = db.Column(db.Integer, primary_key=True)
+    book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeingKey('user.id'), nullable=False)
 
 
 
-# app.config["SQLALCHEMY_DATABASE_URI"] = config('DATABASE_URL')
+# @app.route('/')
+# def index():
 
 
-
-class UserForm(FlaskForm):
-    name = StringField("Name", validators=[DataRequired()])
-    email = StringField("Email", validators=[DataRequired()])
-    submit = SubmitField("Submit")
-
-# Form Class
-class NameForm(FlaskForm):
-    name = StringField("What\'s your name", validators=[DataRequired()])
-    submit = SubmitField("Submit")
+# # localhost:5000/user/tim
+# @app.route('/user/<name>')
+# def user(name):
 
 
-@app.route('/user/add', methods=['GET','POST'])
-def add_user():
-    name = None
-    form = UserForm()
-    # if form.validate_on_submit():
-        # user = Users.query.filter_by(email=form.email.data)
-        
-    return render_template("add_user.html", form=form)
-    
-# localhost:5000/
-@app.route('/')
-def index():
-    return render_template("index.html")
+# @app.route('/login', methods=['POST'])
+# def login():
 
-# localhost:5000/user/tim
-@app.route('/user/<name>')
-def user(name):
-    return render_template("user.html", name=name)
 
-@app.route('/name', methods=['GET','POST'])
-def name():
-    name = None
-    form = NameForm()
-    if form.validate_on_submit():
-        name = form.name.data
-        form.name.data = ''
-    return render_template("name.html",
-        name = name,
-        form = form)
-
-# Error Pages
-@app.errorhandler(404)
-def page_not_found(e):
-    return render_template("404.html"), 404
-
-@app.errorhandler(500)
-def page_not_found(e):
-    return render_template("500.html"), 500
-
+if __name__ == '__app__':
+    app.run(debug=True)
 
 
 
