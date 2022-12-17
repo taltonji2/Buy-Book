@@ -1,12 +1,20 @@
-# @app.route("/books")
-# def books():
-#     return render_template("books.html")
+from flask import Blueprint, render_template
+from flask import current_app as app
 
-# @app.route("/login")
-# def login():
-#     return render_template("login.html")
 
-# @app.route("/")
-# def index():
-#     data = "hello"
-#     return render_template("index.html", data=data)
+# Blueprint Configuration
+index_bp = Blueprint(
+    'index_bp', __name__,
+    template_folder='templates',
+    static_folder='static'
+)
+
+
+@index_bp.route('/', methods=['GET'])
+def index():
+    """Homepage."""
+    return render_template(
+        'index.html',
+        title='Flask Blueprint Demo',
+        template='index',
+    )

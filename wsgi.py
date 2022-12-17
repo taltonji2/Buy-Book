@@ -1,7 +1,7 @@
-from src import init_app
+import src
+handler = src.create_app()
 
 
-app = init_app()
-
-if __name__ == "__main__":
-    app.run(host='0.0.0.0')
+if __name__ == '__main__':
+    print("== Running in debug mode ==")
+    src.create_app().run(host='0.0.0.0', port=5000, debug=True)
