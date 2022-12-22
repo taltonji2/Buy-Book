@@ -1,23 +1,23 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_migrate import Migrate
 
 login_manager = LoginManager()
 
 def create_app():
-    """Construct the core app object."""
     app = Flask(__name__, instance_relative_config=False)
-    app.config.from_object('config.Config')
+    app.config.from_object("config.Config")
+
     db = SQLAlchemy(app)
-    # Initialize Plugins
-    db.init_app(app)
+    Migrate(app,db)
+
+    login_manager = LoginManager()
     login_manager.init_app(app)
+    login_manager.login_view = "users.login"
 
-    with app.app_context():
-        # Import parts of our application
-        from src.routes.index import index_bp
-
-        # Register Blueprints
-        app.register_blueprint(index_bp)
-
-        return app
+    from src.core.views import core
+    from src.error_pages.handlers import error_pages
+    app.register_blueprint(core)
+    app.register_blueprint(error_pages)
+    return app
