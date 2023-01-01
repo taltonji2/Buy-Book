@@ -25,7 +25,7 @@ def logout():
     return redirect(url_for("core.index"))
 
 @users.route('/register', methods=["GET","POST"])
-def signup():
+def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User(

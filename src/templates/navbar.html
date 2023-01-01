@@ -5,14 +5,29 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        {% if current_user.is_authenticated %}
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('core.books')}}">Books</a>
           </li>
         </ul>
-        <!-- Add conditional to hide if user is logged in -->
-        <button class="btn btn-outline-secondary" type="submit" role="register" onclick="window.location = 'http://127.0.0.1:5000/register'" style="margin-right: 10px">Register</button>
-        <button class="btn btn-outline-secondary" type="submit" role="login" onclick="window.location = 'http://127.0.0.1:5000/login'">Login</button>
+        {% else %}
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('core.books')}}">Books</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('users.register')}}">Register</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('users.login')}}">Login</a>
+          </li>
+        </ul>
+        {% endif %}
       </div>
     </div>
   </nav>
