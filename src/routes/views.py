@@ -1,62 +1,71 @@
 from flask import render_template, url_for, flash, redirect, request, Blueprint
 from flask_login import login_user, current_user, logout_user, login_required
+from werkzeug.security import check_password_hash
 from src import db
 from src.models import User, Book
 from src.forms.users import RegistrationForm, LoginForm, UpdateUserForm
 from src.picture_handler import add_profile_pic
+import time
 
-core = Blueprint('core', __name__)
+main = Blueprint('main', __name__)
 
-@core.route('/')
+@main.route('/')
 def index():
     return render_template('index.html')
 
 
-@core.route('/books')
+@main.route('/books')
 def books():
     return render_template('books.html')
 
 
-users = Blueprint('users', __name__)
+auth = Blueprint('auth', __name__)
 
-@users.route('/logout')
+@auth.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for("core.index"))
 
-@users.route('/register', methods=["GET","POST"])
+@auth.route('/register', methods=["GET","POST"])
 def register():
     form = RegistrationForm()
-    if form.validate_on_submit():
-        user = User(
-            email=form.email.data, 
-            username=form.username.data, 
-            password=form.password.data
-        )
-        db.session.add(user)
-        db.session.commit()
-        flash("Successfully registered!")
-        return redirect(url_for("users.login"))
-    return render_template('register.html', form=form)
-
-@users.route('/login', methods=["GET","POST"])
-def login():
-    form = RegistrationForm()
+    
+        
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        if user.check_password(form.password.data) and user is not None:
-            login_user(user)
-            flash('Log in success')
+        if user:
+            time.sleep(1)
+            flash("Email already registered!")
+            return render_template('register.html', form=form)
+        else:
+            user = User(
+                email=form.email.data, 
+                username=form.username.data, 
+                password=form.password.data
+            )
+            db.session.add(user)
+            db.session.commit()
+            time.sleep(1)
+            flash("Successfully registered!")
+            return redirect(url_for("users.login"))
+    return render_template('register.html', form=form)
 
-            next = request.args.get('next')
+@auth.route('/login', methods=["GET","POST"])
+def login():
+    form = LoginForm()
+    
+    email = request.form.get('email')
+    password = request.form.get('password')
 
-            if next == None or not next[0]=='/':
-                next = url_for('core.index')
-            
-            return redirect(next)
+    user = User.query.filter_by(email=email).first()
+    if not user or not check_password_hash(user.password, password):
+        flash('Please check your login details and try again.')
+    else:
+        return redirect(url_for('main.profile'))
+
     return render_template('login.html', form=form)
 
-@users.route('/account', methods=["GET", "POST"])
+@auth.route('/account', methods=["GET", "POST"])
 @login_required
 def account():
     form = UpdateUserForm()
@@ -77,7 +86,7 @@ def account():
     profile_image = url_for('static', filename="profile_pics/"+current_user.profile_image)
     return render_template("account.html", profile_image=profile_image, form=form)
 
-@users.route('/<username>')
+@auth.route('/<username>')
 def user_books(username):
     page = request.args.get("page",1,type=int)
     user = User.query.filter_by(username=username).first_or_404()

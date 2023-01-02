@@ -14,10 +14,10 @@ Migrate(app,db)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = "users.login"
+login_manager.login_view = "auth.login"
 
-from src.core.views import core, users
+from src.routes.views import main, auth
 from src.error_pages.handlers import error_pages
-app.register_blueprint(core)
-app.register_blueprint(users)
+app.register_blueprint(main)
+app.register_blueprint(auth)
 app.register_blueprint(error_pages)

@@ -16,4 +16,3 @@ CREATE TABLE book (
   date DATE NOT NULL,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
-
