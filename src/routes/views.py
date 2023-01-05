@@ -28,13 +28,10 @@ def logout():
 
 @auth.route('/register', methods=["GET","POST"])
 def register():
-    form = RegistrationForm()
-    
-        
+    form = RegistrationForm()    
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
-            time.sleep(1)
             flash("Email already registered!")
             return render_template('register.html', form=form)
         else:
@@ -45,7 +42,6 @@ def register():
             )
             db.session.add(user)
             db.session.commit()
-            time.sleep(1)
             flash("Successfully registered!")
             return redirect(url_for("users.login"))
     return render_template('register.html', form=form)
@@ -53,17 +49,25 @@ def register():
 @auth.route('/login', methods=["GET","POST"])
 def login():
     form = LoginForm()
-    
-    email = request.form.get('email')
-    password = request.form.get('password')
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
 
-    user = User.query.filter_by(email=email).first()
-    if not user or not check_password_hash(user.password, password):
-        flash('Please check your login details and try again.')
-    else:
-        return redirect(url_for('main.profile'))
+        if user.check_password(form.password.data) and user is not None:
+            login_user(user)
+            flash('Log in Success!')
 
+            next = request.args.get('next')
+            print("here")
+            if next == None or not next[0]=="/":
+                next = url_for("main.index")
+            
+            return redirect(next)
     return render_template('login.html', form=form)
+
+@auth.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for("main.index"))
 
 @auth.route('/account', methods=["GET", "POST"])
 @login_required
