@@ -21,11 +21,6 @@ def books():
 
 auth = Blueprint('auth', __name__)
 
-@auth.route('/logout')
-def logout():
-    logout_user()
-    return redirect(url_for("core.index"))
-
 @auth.route('/register', methods=["GET","POST"])
 def register():
     form = RegistrationForm()    
