@@ -1,5 +1,5 @@
-from src import db, login_manager
-from flask_login import UserMixin
+from src import db, login_manager, app
+from flask_login import UserMixin, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
@@ -7,6 +7,11 @@ from datetime import datetime
 def load_user(user_id):
     return User.query.get(user_id)
 
+
+wishlist = db.Table('wishlist',
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
+    db.Column('book_id', db.Integer, db.ForeignKey('book.id'), primary_key=True)
+)
 
 class User(db.Model, UserMixin):
     __tablename__ = "users"
@@ -16,8 +21,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(64), unique=True, index=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     picture = db.Column(db.String(64),nullable=False,default="default_profile.png")
-    books = db.relationship('Book', backref='owner', lazy=True)
-
+    book_wishlist = db.relationship('Book', secondary=wishlist, backref="speculators", lazy='subquery')
     
     def __init__(self, email, username, password):
         self.email = email
@@ -32,14 +36,10 @@ class User(db.Model, UserMixin):
 
 
 class Book (db.Model):
-    
-    users = db.relationship(User)
 
     __tablename__ = "book"
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-
     title = db.Column(db.String(100), nullable=False)
     author = db.Column(db.String(50), nullable=False)
     date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
@@ -50,4 +50,7 @@ class Book (db.Model):
     
     def __repr__(self) -> str:
         return f"Book ID: {self.id}"
+
+
+
 

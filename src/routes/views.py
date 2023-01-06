@@ -16,7 +16,7 @@ def index():
 
 @main.route('/books')
 def books():
-    return render_template('books.html')
+    return render_template('books.html', books=Book.query.order_by(Book.title).all())
 
 
 auth = Blueprint('auth', __name__)

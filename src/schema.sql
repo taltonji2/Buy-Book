@@ -3,16 +3,20 @@ CREATE DATABASE `buy_book_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf
 CREATE TABLE users (
   id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
   username VARCHAR(25) NOT NULL,
-  password_hash VARCHAR(128) NOT NULL,
   email VARCHAR(64) NOT NULL,
+  password_hash VARCHAR(128) NOT NULL,
   picture VARCHAR(64) NOT NULL
 );
 
 CREATE TABLE book (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
   title VARCHAR(100) NOT NULL,
   author VARCHAR(50) NOT NULL,
-  date DATE NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES users(id)
+  date DATE NOT NULL
+);
+
+CREATE TABLE wishlist (
+  user_id INT NOT NULL,
+  book_id INT NOT NULL,
+  PRIMARY Key (user_id, book_id)
 );

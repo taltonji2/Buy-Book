@@ -3,20 +3,21 @@
 <table class="table">
     <thead>
       <tr>
-        <th scope="col">#</th>
-        <th scope="col">First</th>
-        <th scope="col">Last</th>
-        <th scope="col">Handle</th>
+        <th scope="col">Books</th>
+        <th scope="col">Title</th>
+        <th scope="col">Author</th>
+        <th scope="col">Date</th>
       </tr>
     </thead>
     <tbody>
-      <!-- Loop through data and print out  -->
+      {% for book in books%}
       <tr>
         <th scope="row">1</th>
-        <td>Mark</td>
-        <td>Otto</td>
-        <td>@mdo</td>
+        <td>{{book.title}}</td>
+        <td>{{book.author}}</td>
+        <td>{{book.date.strftime("%Y-%m-%d")}}</td>
       </tr>
+      {% endfor %}
     </tbody>
   </table>
 {% endblock %}

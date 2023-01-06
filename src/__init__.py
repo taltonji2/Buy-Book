@@ -21,3 +21,6 @@ from src.error_pages.handlers import error_pages
 app.register_blueprint(main)
 app.register_blueprint(auth)
 app.register_blueprint(error_pages)
+
+
+
