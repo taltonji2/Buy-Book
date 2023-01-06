@@ -38,7 +38,7 @@ def register():
             db.session.add(user)
             db.session.commit()
             flash("Successfully registered!")
-            return redirect(url_for("users.login"))
+            return redirect(url_for("auth.login"))
     return render_template('register.html', form=form)
 
 @auth.route('/login', methods=["GET","POST"])
@@ -47,7 +47,11 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
 
-        if user.check_password(form.password.data) and user is not None:
+        if not user:
+            flash('Check login credentials, try again')
+            return redirect(url_for('auth.login'))
+
+        if user.check_password(form.password.data):
             login_user(user)
             flash('Log in Success!')
 
@@ -72,17 +76,19 @@ def account():
         if form.picture.data:
             username = current_user.username
             pic = add_profile_pic(form.picture.data, username)
-            current_user.profile_image = pic
+            print(pic)
+            current_user.picture = pic
 
         current_user.username = form.username.data
-        current_user.email = form.username.data
+        current_user.email = form.email.data
         db.session.commit()
-        return redirect(url_for('users.account'))
+        flash("User Account Updated")
+        return redirect(url_for('auth.account'))
     elif request.method == "GET":
         form.username.data = current_user.username
         form.email.data = current_user.email
 
-    profile_image = url_for('static', filename="profile_pics/"+current_user.profile_image)
+    profile_image = url_for('static', filename="profile_pics/"+current_user.picture)
     return render_template("account.html", profile_image=profile_image, form=form)
 
 @auth.route('/<username>')
