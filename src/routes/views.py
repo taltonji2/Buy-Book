@@ -16,7 +16,7 @@ def index():
 
 @main.route('/books')
 def books():
-    return render_template('books.html', books=Book.query.order_by(Book.title).all())
+    return render_template('books.html', books=Book.query.all())
 
 
 auth = Blueprint('auth', __name__)
@@ -93,7 +93,7 @@ def account():
 
 @auth.route('/<username>')
 def user_books(username):
-    page = request.args.get("page",1,type=int)
     user = User.query.filter_by(username=username).first_or_404()
-    books = Book.query.filter_by(owner=user).order_by(Book.date.desc()).paginate(page=page, per_page=5)
+    query = Book.query.join(Book, User.books)
+    books = query.order_by(Book.title).all()
     return render_template('user_books.html', books=books, user=user)

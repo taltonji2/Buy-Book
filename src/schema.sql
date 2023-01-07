@@ -8,15 +8,17 @@ CREATE TABLE users (
   picture VARCHAR(64) NOT NULL
 );
 
-CREATE TABLE book (
+CREATE TABLE books (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(100) NOT NULL,
   author VARCHAR(50) NOT NULL,
   date DATE NOT NULL
 );
 
-CREATE TABLE wishlist (
+CREATE TABLE books_users (
   user_id INT NOT NULL,
   book_id INT NOT NULL,
-  PRIMARY Key (user_id, book_id)
+  PRIMARY Key (user_id, book_id),
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (book_id) REFERENCES books(id)
 );

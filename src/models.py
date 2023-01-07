@@ -8,9 +8,10 @@ def load_user(user_id):
     return User.query.get(user_id)
 
 
-wishlist = db.Table('wishlist',
-    db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
-    db.Column('book_id', db.Integer, db.ForeignKey('book.id'), primary_key=True)
+books_users_table = db.Table('books_users',
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id'), nullable=False),
+    db.Column('book_id', db.Integer, db.ForeignKey('books.id'), nullable=False),
+    db.PrimaryKeyConstraint('user_id', 'book_id')
 )
 
 class User(db.Model, UserMixin):
@@ -21,7 +22,10 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(64), unique=True, index=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     picture = db.Column(db.String(64),nullable=False,default="default_profile.png")
-    book_wishlist = db.relationship('Book', secondary=wishlist, backref="speculators", lazy='subquery')
+    books = db.relationship('Book', 
+        secondary=books_users_table, 
+        backref="speculators", 
+        )
     
     def __init__(self, email, username, password):
         self.email = email
@@ -37,13 +41,13 @@ class User(db.Model, UserMixin):
 
 class Book (db.Model):
 
-    __tablename__ = "book"
+    __tablename__ = "books"
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     author = db.Column(db.String(50), nullable=False)
     date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-
+    users = db.relationship("User", secondary=books_users_table, backref="readers")
     def __init__(self, title, author):
         self.title = title
         self.author = author
